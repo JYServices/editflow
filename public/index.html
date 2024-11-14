@@ -12,6 +12,7 @@
             font-style: normal;
         }
         body {
+            /* font-family: Arial, sans-serif; (구버전 Arial Sans-serif 폰트 패밀리*/
             font-family: 'Freesentation-6SemiBold', sans-serif;
             margin: 0;
             padding: 0;
@@ -20,12 +21,13 @@
 
         .container {
             width: 80%;
+            right: 0;
             margin: auto;
             margin-top: 50px;
             background-color: #fff;
             padding: 20px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            margin-left: 300px; 
+            margin-left: 300px; /* drawer의 너비만큼 왼쪽 마진 추가 */
         }
 
         .drawer {
@@ -77,6 +79,11 @@
             padding: 10px;
             font-size: 16px;
         }
+        #formForm input{
+            width: 80%;
+            padding: 10px;
+            font-size: 16px;
+        }
 
         #docForm button:hover, #formTypeSelector button:hover {
             background-color: #45a049;
@@ -101,7 +108,7 @@
         <a href="#" onclick="showSection('documents')">문서</a>
         <a href="#" onclick="showSection('forms')">퀴즈 편집</a>
         <a href="#" onclick="showSection('slides')">Interactive 슬라이드</a>
-        <a href="#" onclick="window.location.href='/whiteboard/'">화이트보드</a> 
+        <a href="#" onclick="window.location.href='/whiteboard/'">화이트보드</a> <!-- Whiteboard 추가 -->
         <a href="#" onclick="window.location.href='/moreservices/video/'">사용방법</a>
     </div>
 
@@ -119,6 +126,7 @@
                 <button type="submit">문서 생성</button>
             </form>
             
+            <!-- PDF Upload Section -->
             <h2>PDF 업로드로 문서 추가</h2>
             <form id="pdfUploadForm" onsubmit="uploadPdf(event)">
                 <input type="file" id="pdfFile" accept=".pdf" required>
@@ -144,7 +152,7 @@
             <h2>내 퀴즈 목록</h2>
             <ul id="formList"></ul>
         </div>
-
+        <!-- Slides 섹션 추가 -->
         <div id="slideSection" style="display: none;">
             <h2>Interactive 슬라이드</h2>
             <button onclick="createNewSlide()">슬라이드 생성 (Coming Soon)</button>
@@ -153,10 +161,8 @@
     </div>
 
     <script>
-        const apiBaseUrl = 'https://editflow.onrender.com';  // API base URL
-
         function showSection(section) {
-            section = section.toLowerCase();  
+            section = section.toLowerCase();  // Normalize to lowercase
             document.getElementById('documentSection').style.display = section === 'documents' ? 'block' : 'none';
             document.getElementById('formSection').style.display = section === 'forms' ? 'block' : 'none';
             document.getElementById('slideSection').style.display = section === 'slides' ? 'block' : 'none';
@@ -168,6 +174,7 @@
                 whiteboard: '화이트보드'
             };
             document.getElementById('sectionTitle').innerText = titles[section] || 'Interactive Slides Manager';
+            document.getElementById('whiteboardSection').style.display = section = 'whiteboard' ? 'block' : 'none';
         }
 
         document.getElementById('formType').addEventListener('change', function() {
@@ -175,6 +182,8 @@
             quizPromptInput.style.display = this.value === 'ai' ? 'block' : 'none';
         });
 
+
+        // Load forms and documents on page load
         window.onload = function() {
             loadDocuments();
             loadForms();
@@ -186,16 +195,17 @@
             aiPromptInput.style.display = this.value === 'ai' ? 'block' : 'none';
         });
 
+
         // Document management logic
         function createNewDoc(event) {
             event.preventDefault();
 
             const title = document.getElementById('docTitle').value;
             const docType = document.getElementById('docType').value;
-            const uid = generateUID();
+            const uid = generateUID(); // 수정된 UID 생성 방식
 
             const newDoc = { title, uid, content: '<p>New Document</p>' };
-            let url = `${apiBaseUrl}/docs`;  // Use the API base URL
+            let url = 'https://editflow.onrender.com/docs';
             let bodyData = JSON.stringify(newDoc);
 
             if (docType === 'ai') {
@@ -204,7 +214,7 @@
                     alert('Please enter a prompt for the AI-generated document.');
                     return;
                 }
-                url = `${apiBaseUrl}/generate-ai-doc`;
+                url = 'https://editflow.onrender.com/generate-ai-doc';
                 bodyData = JSON.stringify({ prompt });
             }
 
@@ -215,13 +225,15 @@
             })
             .then(response => {
                 if (!response.ok) throw new Error('Failed to create document');
+                console.log(response)
                 return response.json();
             })
             .then(data => {
                 const content = data.content || '<p>New Document</p>';
                 newDoc.content = content;
 
-                return fetch(`${apiBaseUrl}/docs`, {
+                // 서버에 문서 저장
+                return fetch('https://editflow.onrender.com/docs', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(newDoc),
@@ -229,43 +241,77 @@
             })
             .then(response => {
                 if (!response.ok) throw new Error('Failed to save document');
-                addDocumentToCache(newDoc); 
-                document.getElementById('docForm').reset(); 
+                addDocumentToCache(newDoc); // 로컬 캐시에 추가
+                document.getElementById('docForm').reset(); // 폼 초기화
             })
             .catch(error => {
                 console.error('Error:', error);
                 alert('Error: ' + error.message);
             });
         }
+
 
         function createNewSlide() {
             window.location.href = "/slides/v2.html";
         }
 
+
         function generateUID() {
-            return '_' + Math.random().toString(36).substr(2, 9);
+            const now = new Date();
+
+            // 현재 시각의 요소들을 추출
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1;  // 월은 0부터 시작하므로 +1 필요
+            const day = now.getDate();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            const milliseconds = now.getMilliseconds();
+
+            // 각 요소를 16진수로 변환하고 자릿수 맞추기
+            const hexYear = year.toString(16).padStart(4, '0'); // 연도는 4자리
+            const hexMonth = month.toString(16).padStart(2, '0');
+            const hexDay = day.toString(16).padStart(2, '0');
+            const hexHours = hours.toString(16).padStart(2, '0');
+            const hexMinutes = minutes.toString(16).padStart(2, '0');
+            const hexSeconds = seconds.toString(16).padStart(2, '0');
+            const hexMilliseconds = milliseconds.toString(16).padStart(3, '0');
+
+            // UID 조합 (연, 월, 일, 시, 분, 초, 밀리초)
+            const uid = `${hexYear}${hexMonth}${hexDay}${hexHours}${hexMinutes}${hexSeconds}${hexMilliseconds}`;
+
+            return uid;
         }
 
+
+
+        function loadDocuments() {
+            displayItems('docList', getItemsFromCache('documents'), openDocument);
+        }
         function uploadPdf(event) {
             event.preventDefault();
-            const file = document.getElementById('pdfFile').files[0];
 
-            if (!file) return alert('PDF file is required');
-
+            const pdfFile = document.getElementById('pdfFile').files[0];
             const formData = new FormData();
-            formData.append('pdf', file);
+            formData.append('pdf', pdfFile);
 
-            fetch(`${apiBaseUrl}/upload-pdf`, {
+            fetch('https://editflow.onrender.com/uploadpdf', {
                 method: 'POST',
-                body: formData
+                body: formData,
             })
             .then(response => {
                 if (!response.ok) throw new Error('Failed to upload PDF');
-                return response.json();
+                return response.json(); // 서버에서 UID와 제목 같은 메타데이터 반환
             })
             .then(data => {
-                alert('PDF uploaded successfully');
-                loadDocuments();
+                const { uid, title } = data;
+                
+                // PDF 문서를 캐시에 추가
+                const newPdfDoc = { title: title || pdfFile.name, uid };
+                addDocumentToCache(newPdfDoc); // 캐시에 추가 및 UI 갱신
+
+                alert('PDF uploaded successfully!'); // 성공 메시지 표시
+                document.getElementById('pdfUploadForm').reset(); // 폼 초기화
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -273,36 +319,13 @@
             });
         }
 
-        // Helper function to add document to the UI
-        function addDocumentToCache(doc) {
-            const docList = document.getElementById('docList');
-            const li = document.createElement('li');
-            li.textContent = doc.title;
-            li.onclick = () => openDocument(doc.uid);
-            docList.appendChild(li);
-        }
-
-        function loadDocuments() {
-            fetch(`${apiBaseUrl}/docs`)
-            .then(response => response.json())
-            .then(docs => {
-                const docList = document.getElementById('docList');
-                docList.innerHTML = ''; // clear the list
-                docs.forEach(doc => addDocumentToCache(doc));
-            })
-            .catch(error => console.error('Error loading documents:', error));
-        }
-
-        // Form management logic
+        // Create New form 퀴즈 새성 클라이언트 함수
         function createNewForm(event) {
             event.preventDefault();
-            
             const title = document.getElementById('formTitle').value;
             const formType = document.getElementById('formType').value;
-            const uid = generateUID();
-
-            const newForm = { title, uid, type: formType };
-            let url = `${apiBaseUrl}/forms`;  // Use the API base URL
+            const uid = generateUID(); // UID 생성
+            const newQuizDoc = { title, uid }; // content를 먼저 정의하지 않아서 문제
 
             if (formType === 'ai') {
                 const prompt = document.getElementById('quizPrompt').value;
@@ -310,52 +333,160 @@
                     alert('Please enter a prompt for the AI-generated quiz.');
                     return;
                 }
-                url = `${apiBaseUrl}/generate-ai-form`;
-                newForm.prompt = prompt;
+                
+                fetch('https://editflow.onrender.com/generate-ai-quiz', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userPrompt: prompt, uid: uid }) // userPrompt와 uid 모두 포함
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to generate AI quiz');
+                    return response.json();
+                })
+                .then(data => {
+                    const quizContent = data.content; // AI 응답의 quizContent
+                    newQuizDoc.content = quizContent; // content 추가
+                    console.log("지금 AI의 생성값이 서버 문서에 저장되고 있습니다.")
+                    return fetch('https://editflow.onrender.com/save-quiz', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(newQuizDoc),
+                    });
+                })
+                .then(() => {
+                    addFormToCache({ title, uid, quizContent: newQuizDoc.content }); // AI 응답을 캐시에 추가
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error: ' + error.message);
+                });
+            } else {
+                // 비 AI 폼 생성 로직
+                fetch(`save-quiz?title=${title}&uid=${uid}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, uid })
+                }).then(() => {
+                    addFormToCache({ title, uid });
+                });
             }
+        }        
 
-            fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(newForm),
-            })
-            .then(response => response.json())
-            .then(data => {
-                addFormToCache(data);
-                document.getElementById('formForm').reset();
-            })
-            .catch(error => {
-                console.error('Error creating form:', error);
-                alert('Error creating form: ' + error.message);
+        function loadForms() {
+            displayItems('formList', getItemsFromCache('forms'), openForm);
+        }
+
+        // General helper functions for forms and docs
+        function displayItems(listId, items, openFunction) {
+            const list = document.getElementById(listId);
+            list.innerHTML = '';
+            items.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span>${item.title}</span>
+                                <button onclick="${openFunction.name}('${item.uid}')">Edit</button>
+                                <button class="delete-btn" onclick="deleteItem('${item.uid}', '${listId === 'docList' ? 'documents' : 'forms'}')">Delete</button>`;
+                list.appendChild(li);
             });
         }
 
-        function loadForms() {
-            fetch(`${apiBaseUrl}/forms`)
-            .then(response => response.json())
-            .then(forms => {
-                const formList = document.getElementById('formList');
-                formList.innerHTML = '';
-                forms.forEach(form => addFormToCache(form));
-            })
-            .catch(error => console.error('Error loading forms:', error));
-        }
-
-        function addFormToCache(form) {
-            const formList = document.getElementById('formList');
-            const li = document.createElement('li');
-            li.textContent = form.title;
-            li.onclick = () => openForm(form.uid);
-            formList.appendChild(li);
-        }
-
         function openDocument(uid) {
-            alert(`Document UID: ${uid}`); // Implement document viewing logic here
+            window.location.href = `edit_docs.html?uid=${uid}`;
         }
 
         function openForm(uid) {
-            alert(`Form UID: ${uid}`); // Implement form viewing logic here
+            window.location.href = `quiz_edit.html?uid=${uid}`;
+        }
+
+        function deleteItem(uid, cacheKey) {
+            fetch(`https://editflow.onrender.com/deletedocuments?uid=${uid}`, { method: 'POST' }).then(() => {
+                removeItemFromCache(uid, cacheKey);
+            });
+        }
+
+        function addDocumentToCache(doc) {
+            addToCache('documents', doc);
+            loadDocuments();  // UI 갱신
+        }
+
+
+        function addFormToCache(form) {
+            addToCache('forms', form);
+            loadForms();
+        }
+
+        function addToCache(cacheKey, item) {
+            const items = getItemsFromCache(cacheKey);
+            items.push(item);
+            localStorage.setItem(cacheKey, JSON.stringify(items));
+        }
+
+        function getItemsFromCache(cacheKey) {
+            const items = localStorage.getItem(cacheKey);
+            return items ? JSON.parse(items) : [];
+        }
+
+        function removeItemFromCache(uid, cacheKey) {
+            const items = getItemsFromCache(cacheKey).filter(item => item.uid !== uid);
+            localStorage.setItem(cacheKey, JSON.stringify(items));
+            if (cacheKey === 'documents') {
+                loadDocuments();
+            } else {
+                loadForms();
+            }
+        }
+        // 화이트보드 관리 코드들
+        const canvas = document.getElementById('whiteboardCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 800; // 화이트보드 너비
+        canvas.height = 400; // 화이트보드 높이
+
+        // 저장된 화이트보드 이미지를 표시하는 함수
+        function loadWhiteboard() {
+            const uid = prompt("Enter your whiteboard UID:");
+            if (!uid) return;
+
+            fetch(`https://editflow.onrender.com/userboards/${uid}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to load whiteboard');
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const img = new Image();
+                    img.onload = function() {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height); // 기존 내용 지우기
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height); // 이미지 그리기
+                    };
+                    img.src = url;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error: ' + error.message);
+                });
+        }
+
+        // 화이트보드 이미지를 서버에 저장하는 함수
+        function saveWhiteboard() {
+            const uid = prompt("Enter your whiteboard UID:");
+            if (!uid) return;
+
+            const image = canvas.toDataURL('image/jpeg'); // 캔버스 이미지를 base64로 변환
+
+            fetch('https://editflow.onrender.com/userboards', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ uid, image }),
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to save whiteboard');
+                alert('Whiteboard saved successfully!');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error: ' + error.message);
+            });
         }
     </script>
+
 </body>
 </html>
