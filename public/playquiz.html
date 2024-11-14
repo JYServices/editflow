@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>퀴즈 플레이 - EditFlow</title>
+    <style>
+        @font-face {
+            font-family: 'S-CoreDream-3Light';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-3Light.woff') format('woff');
+            font-weight: 500;
+            font-style: bold;
+        }
+        body {
+            font-family: 'S-CoreDream-3Light', Arial, sans-serif;
+            margin: 0;
+            font-weight: bolder;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="radio"], input[type="text"] {
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #resultPopup, #sharePopup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+        }
+        .popupContent {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            width: 300px;
+        }
+        canvas {
+            width: 100% !important;
+            height: 300px !important;
+        }
+        #qrcode {
+            margin: 20px auto;
+        }
+        #shareLink {
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Quiz</h1>
+        <form id="quizForm" onsubmit="submitQuiz(event)">
+            <div id="questionsContainer"></div>
+            <button type="submit">Submit Quiz</button>
+        </form>
+        <button id="sharequiz" onclick="shareQuiz()">Share To People</button>
+    </div>
+
+    <div id="resultPopup">
+        <div class="popupContent">
+            <h2>Quiz Results</h2>
+            <p id="resultMessage"></p>
+            <canvas id="resultChart"></canvas>
+            <button id="closeResultPopupButton">Close</button>
+        </div>
+    </div>
+
+    <div id="sharePopup">
+        <div class="popupContent">
+            <h2>Share this Quiz</h2>
+            <div id="qrcode"></div>
+            <input type="text" id="shareLink" readonly>
+            <button onclick="copyLink()">Copy Link</button>
+            <button id="closeSharePopupButton">Close</button>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            const uid = getUidFromUrl();
+            fetch(`http://127.0.0.1/quiz/${uid}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Fetched Data:", data);
+
+                    // `content` 필드가 있는지 확인하여 퀴즈 데이터를 추출
+                    const quizData = data.content ? data.content : data;
+
+                    console.log("Quiz Data:", quizData);
+
+                    // 페이지 제목 설정
+                    document.title = quizData.title;
+
+                    // 퀴즈 렌더링
+                    displayQuiz(quizData.questions);
+                    window.quizData = quizData; // 전역 변수에 저장
+                })
+                .catch(error => {
+                    console.error('Error fetching quiz:', error);
+                });
+        };
+
+
+
+        function getUidFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('uid');
+        }
+
+        function extractQuizData(data) {
+            try {
+                if (data.content) {
+                    console.log("Attempting to parse content field...");
+                    const parsedContent = JSON.parse(data.content); // Handle stringified JSON
+                    return parsedContent;
+                }
+            } catch (error) {
+                console.error('Error parsing content:', error);
+            }
+            return data; // Fallback to original data
+        }
+
+        function displayQuiz(questions) {
+            const questionsDiv = document.getElementById('questionsContainer');
+            questions.forEach((q, index) => {
+                const questionContainer = document.createElement('div');
+                questionContainer.classList.add('question');
+                questionContainer.innerHTML = `
+                    <h2>Question ${index + 1}</h2>
+                    <p>${q.text}</p>
+                `;
+                if (q.type === 'multiple') {
+                    q.options.forEach((option, idx) => {
+                        const optionElement = document.createElement('div');
+                        optionElement.innerHTML = `
+                            <label>
+                                <input type="radio" name="question${index}" value="${idx + 1}" required>
+                                ${option}
+                            </label>
+                        `;
+                        questionContainer.appendChild(optionElement);
+                    });
+                } else {
+                    questionContainer.innerHTML += `
+                        <input type="text" name="question${index}" placeholder="Enter your answer" required>
+                    `;
+                }
+                questionsDiv.appendChild(questionContainer);
+            });
+        }
+
+        function submitQuiz(event) {
+            event.preventDefault();
+            const quizForm = document.getElementById('quizForm');
+            const formData = new FormData(quizForm);
+            const userAnswers = Array.from(formData.values()).map(a => a.trim());
+
+            let score = 0;
+            userAnswers.forEach((answer, index) => {
+                const question = window.quizData.questions[index];
+                if (question.type === 'multiple' && answer === String(question.correctAnswer)) {
+                    score++;
+                } else if (question.type === 'subjective' && answer.toLowerCase() === question.correctAnswer.toLowerCase()) {
+                    score++;
+                }
+            });
+
+            const totalQuestions = window.quizData.questions.length;
+            const percentage = (score / totalQuestions) * 100;
+            document.getElementById('resultMessage').textContent =
+                `Your score: ${score}/${totalQuestions} (${percentage.toFixed(2)}%)`;
+
+            const ctx = document.getElementById('resultChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Correct', 'Incorrect'],
+                    datasets: [{ data: [score, totalQuestions - score], backgroundColor: ['#36A2EB', '#FF6384'] }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            document.getElementById('resultPopup').style.display = 'flex';
+        }
+
+        function shareQuiz() {
+            const uid = getUidFromUrl();
+            const shareUrl = `http://127.0.0.1/playquiz.html?uid=${uid}`;
+            document.getElementById('shareLink').value = shareUrl;
+            new QRCode(document.getElementById("qrcode"), { text: shareUrl, width: 128, height: 128 });
+            document.getElementById('sharePopup').style.display = 'flex';
+        }
+
+        document.getElementById('closeResultPopupButton').onclick = () =>
+            document.getElementById('resultPopup').style.display = 'none';
+        document.getElementById('closeSharePopupButton').onclick = () =>
+            document.getElementById('sharePopup').style.display = 'none';
+    </script>
+</body>
+</html>

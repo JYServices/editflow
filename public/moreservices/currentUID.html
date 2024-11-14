@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>실시간 UID 확인 - EditFlow (부가 서비스)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #uidDisplay {
+            font-size: 24px;
+            color: #333;
+            background-color: #f4f4f4;
+            padding: 20px;
+            border: 2px solid #ddd;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Real-time UID Generator</h1>
+    <div id="uidDisplay">Loading UID...</div>
+
+    <script>
+        function updateUID() {
+            const now = new Date();
+
+            // Extract current time elements
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1;  // Months start from 0, so +1 is needed
+            const day = now.getDate();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            const milliseconds = now.getMilliseconds();
+
+            // Convert each element to hexadecimal and pad with leading zeros if necessary
+            const hexYear = year.toString(16).padStart(4, '0'); // 4 digits for year
+            const hexMonth = month.toString(16).padStart(2, '0');
+            const hexDay = day.toString(16).padStart(2, '0');
+            const hexHours = hours.toString(16).padStart(2, '0');
+            const hexMinutes = minutes.toString(16).padStart(2, '0');
+            const hexSeconds = seconds.toString(16).padStart(2, '0');
+            const hexMilliseconds = milliseconds.toString(16).padStart(3, '0');
+
+            // Combine all elements into a UID
+            const uid = `${hexYear}${hexMonth}${hexDay}${hexHours}${hexMinutes}${hexSeconds}${hexMilliseconds}`;
+
+            // Display the UID
+            document.getElementById('uidDisplay').innerText = uid;
+        }
+
+        // Update UID every 50 milliseconds
+        setInterval(updateUID, 50);
+    </script>
+
+</body>
+</html>

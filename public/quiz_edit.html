@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>퀴즈 편집기 - EditFlow</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .question-options {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>퀴즈 편집기</h1>
+        <h2>Editflow - AI Powered Document editor</h2>
+        <form id="quizForm" onsubmit="saveQuiz(event)">
+            <label for="quizTitle">퀴즈 제목:</label>
+            <input type="text" id="quizTitle" placeholder="Enter quiz title" required>
+
+            <label for="quizSubtitle">퀴즈 부제목:</label>
+            <input type="text" id="quizSubtitle" placeholder="Enter quiz subtitle">
+
+            <div id="questionsContainer"></div>
+
+            <button type="button" onclick="addQuestion()">문제 추가</button>
+            <button type="submit">퀴즈 저장</button>
+            <button type="button" onclick="playQuiz()">퀴즈 플레이</button>
+        </form>
+    </div>
+
+    <script>
+        window.onload = function () {
+            console.log("Page loaded. Fetching quiz data...");
+            const uid = getUidFromUrl();
+
+            fetch(`http://127.0.0.1/quiz/${uid}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Fetched Data:", data); // Log raw fetched data
+                    let quizData;
+                    quizData = {
+                            title: data.title || '제목 없는 퀴즈',
+                            subtitle: data.content?.subtitle || '',
+                            questions: data.content?.questions || []
+                    };
+                    // Update document title and input fields
+                    document.title = (quizData.title || '제목 없는 퀴즈') + ' - EditFlow 퀴즈';
+                    document.querySelector('#quizTitle').value = quizData.title || '';
+                    document.querySelector('#quizSubtitle').value = quizData.subtitle || '';
+
+                    // Clear existing questions
+                    const questionsDiv = document.getElementById('questionsContainer');
+                    questionsDiv.innerHTML = '';
+
+                    // Add questions to the container
+                    quizData.questions.forEach((q, index) => {
+                        console.log(`Adding question ${index + 1}:`, q);
+                        addExistingQuestion(q, index + 1);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching quiz:', error);
+                });
+        };
+
+        // URL에서 UID를 가져오는 함수
+        function getUidFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('uid');
+        }
+    
+        let questionCount = 0;
+
+        function addQuestion() {
+            questionCount++;
+            const questionContainer = document.createElement('div');
+            questionContainer.classList.add('question');
+            questionContainer.innerHTML = `
+                <h2>문제 ${questionCount}</h2>
+                <label for="questionText${questionCount}">문제:</label>
+                <input type="text" id="questionText${questionCount}" placeholder="문제 (내용) 을 입력해주세요" required>
+
+                <label for="questionType${questionCount}">문제 종류:</label>
+                <select id="questionType${questionCount}" onchange="changeQuestionType(${questionCount})">
+                    <option value="multiple">객관식 문제</option>
+                    <option value="subjective">주관식 문제</option>
+                </select>
+
+                <div id="optionsContainer${questionCount}" class="question-options">
+                    <label>객관색 문제 선택지:</label>
+                    <input type="text" id="option1_${questionCount}" placeholder="보기 1">
+                    <input type="text" id="option2_${questionCount}" placeholder="보기 2">
+                    <input type="text" id="option3_${questionCount}" placeholder="보기 3">
+                    <input type="text" id="option4_${questionCount}" placeholder="보기 4">
+                    <label for="correctAnswer${questionCount}">정답:</label>
+                    <input type="number" id="correctAnswer${questionCount}" min="1" max="4" placeholder="올바른 객관식 문제의 정답의 번호를 입력하세요">
+                </div>
+
+                <div id="subjectiveContainer${questionCount}" style="display: none;">
+                    <label for="subjectiveAnswer${questionCount}">주관식 문제: </label>
+                    <input type="text" id="subjectiveAnswer${questionCount}" placeholder="주관식 문제 정답 입력">
+                </div>
+            `;
+            document.getElementById('questionsContainer').appendChild(questionContainer);
+        }
+
+        // 기존 질문 추가 함수
+        function addExistingQuestion(questionData, index) {
+            questionCount++; 
+            const questionContainer = document.createElement('div');
+            questionContainer.classList.add('question');
+            questionContainer.innerHTML = `
+                <h2>문제 ${index}</h2>
+                <label for="questionText${index}">문제:</label>
+                <input type="text" id="questionText${index}" value="${questionData.text}" placeholder="문제 (내용) 을 입력해주세요" required>
+
+                <label for="questionType${index}">문제 종류:</label>
+                <select id="questionType${index}" onchange="changeQuestionType(${index})">
+                    <option value="multiple" ${questionData.type === 'multiple' ? 'selected' : ''}>객관식 문제</option>
+                    <option value="subjective" ${questionData.type === 'subjective' ? 'selected' : ''}>주관식 문제</option>
+                </select>
+
+                <div id="optionsContainer${index}" class="question-options" style="${questionData.type === 'subjective' ? 'display: none;' : ''}">
+                    <label>객관식 문제 선택지:</label>
+                    ${questionData.options ? questionData.options.map((option, idx) => `
+                        <input type="text" id="option${idx + 1}_${index}" value="${option}" placeholder="Option ${idx + 1}">
+                    `).join('') : ''}
+                    <label for="correctAnswer${index}">정답:</label>
+                    <input type="number" id="correctAnswer${index}" min="1" max="4" value="${questionData.correctAnswer}" placeholder="올바른 객관식 문제의 정답의 번호를 입력하세요">
+                </div>
+
+                <div id="subjectiveContainer${index}" style="${questionData.type === 'subjective' ? 'display: block;' : 'display: none;'}">
+                    <label for="subjectiveAnswer${index}">Subjective Answer:</label>
+                    <input type="text" id="subjectiveAnswer${index}" value="${questionData.correctAnswer}" placeholder="Enter subjective correct answer">
+                </div>
+            `;
+            document.getElementById('questionsContainer').appendChild(questionContainer);
+        }
+
+        function changeQuestionType(questionId) {
+            const questionType = document.getElementById(`questionType${questionId}`).value;
+            const optionsContainer = document.getElementById(`optionsContainer${questionId}`);
+            const subjectiveContainer = document.getElementById(`subjectiveContainer${questionId}`);
+
+            if (questionType === 'subjective') {
+                optionsContainer.style.display = 'none';
+                subjectiveContainer.style.display = 'block';
+            } else {
+                optionsContainer.style.display = 'block';
+                subjectiveContainer.style.display = 'none';
+            }
+        }
+
+        function saveQuiz(event) {
+            event.preventDefault();
+
+            const uid = getUidFromUrl();  // URL에서 uid 가져오기
+            if (!uid) {
+                console.error('UID is missing');
+                return;
+            }
+
+            const quizData = {
+                title: document.getElementById('quizTitle').value,
+                subtitle: document.getElementById('quizSubtitle').value,
+                questions: []
+            };
+
+            // 질문들 모으기
+            for (let i = 1; i <= questionCount; i++) {
+                const questionText = document.getElementById(`questionText${i}`).value;
+                const questionType = document.getElementById(`questionType${i}`).value;
+
+                const question = { text: questionText, type: questionType };
+                
+                if (questionType === 'multiple') {
+                    question.options = [
+                        document.getElementById(`option1_${i}`).value,
+                        document.getElementById(`option2_${i}`).value,
+                        document.getElementById(`option3_${i}`).value,
+                        document.getElementById(`option4_${i}`).value,
+                    ];
+                    question.correctAnswer = parseInt(document.getElementById(`correctAnswer${i}`).value);
+                } else {
+                    question.correctAnswer = document.getElementById(`subjectiveAnswer${i}`).value;
+                }
+
+                quizData.questions.push(question);
+            }
+            content = quizData
+            title = document.querySelector('#quizTitle').value
+            fetch(`http://127.0.0.1/save-quiz`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, uid, content }) // 구조 확인
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to save quiz');
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('Quiz saved successfully!');
+                console.log('Quiz saved:', data);
+            })
+            .catch(error => {
+                console.error('Error saving quiz:', error);
+            });
+        }
+
+        function playQuiz() {
+            const uid = getUidFromUrl();
+            if (uid) {
+                
+                window.location.href = `playquiz.html?uid=${uid}`; // UID와 함께 리다이렉트
+            } else {
+                console.error("URL에서 UID를 감지 할 수 없었습니다.")
+                alert("퀴즈 플레이 로드 중 오류가 발생하였습니다. Enter을 눌러 해결 방안을 보십시오.")
+                alert("위 주소창에서 quizedit.html 을 찾아 playquiz.html 로 바꾸시면 해결됩니다.")
+            }
+            
+        }
+
+    </script>
+</body>
+</html>

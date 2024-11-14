@@ -1,0 +1,22 @@
+{
+  "title": "asdf",
+  "content": {
+    "title": "**Title Options for Metaverse Quiz:**\n\n1. Metaverse Mastermind Quiz\n2. Test Your Metaverse IQ\n3. Ultimate Metaverse Knowledge Challenge\n4. Metaverse Trivia Extravaganza\n5. Decode the Metaverse: A Quiz for the Curious\n6. Metaverse Mavericks: Prove Your Expertise\n7. Metaverse Odyssey: A Journey of Knowledge\n8. Metaverse Explorers: Embark on a Quiz Quest\n9. Dive into the Metaverse: A Quiz for the Adventurous\n10. Metaverse Enigma: Unravel the Mysteries",
+    "subtitle": "**Subtitle Options for Metaverse Quiz:**\n\n1. Questions to Test Your Understanding of the Virtual Frontier\n2. Unveil the Secrets and Potential of the Digital Realm\n3. Explore the Metaverse's Impact on Society and Technology\n4. Navigate the Labyrinth of Virtual Worlds\n5. Discover the Future of Immersive Experiences\n6. Embark on a Journey Through the Metaverse's Possibilities\n7. Challenge Your Limits in the Digital Metaverse\n8. Decode the Metaverse: A Quest for Knowledge\n9. Master the Metaverse: Enhance Your Virtual Skills\n10. Ascend to Metaverse Mastery: A Quiz for the Elite",
+    "questions": [
+      {
+        "text": "**Multiple Choice Question:**\n\n**Which of the following is a key characteristic of the Metaverse?**\n\n(A) Decentralization\n(B) Interoperability\n(C) Immersiveness\n(D) All of the above\n\n**Answer:** D",
+        "type": "multiple",
+        "options": [
+          "**Multiple Choice Question Options:**\n\n1. Decentralization\n2. Interoperability\n3. Immersiveness\n4. Low latency"
+        ],
+        "correctAnswer": null
+      },
+      {
+        "text": "**Subjective Question:**\n\n**Describe the potential impact of the Metaverse on social interactions and human relationships.**\n\n**Answer:** \nThis question requires a written response that explores the potential effects of the Metaverse on social interactions and human relationships. The response should consider both positive and negative outcomes, providing specific examples and обоснование.",
+        "type": "subjective",
+        "correctAnswer": "As an AI, I cannot provide a specific \"correct\" answer to this question as it is subjective and open to interpretation. However, I can provide some general guidance:\n\nA good answer should:\n\n* **Address both positive and negative potential impacts:** Discuss how the Metaverse could enhance social interactions (e.g., increased connectivity, virtual gatherings) and also potential drawbacks (e.g., social isolation, digital divide).\n* **Provide specific examples and обоснование:** Elaborate on the potential impacts with concrete examples and explain why these outcomes are likely.\n* **Consider different perspectives:** Acknowledge that individuals may have varying experiences and opinions on the Metaverse's impact on social interactions.\n* **Be well-written and organized:** Present a clear and concise response that is easy to understand.\n\nUltimately, the quality of the answer will depend on the individual's knowledge, critical thinking skills, and writing ability."
+      }
+    ]
+  }
+}

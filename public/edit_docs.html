@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docs / PDF 편집 - EditFlow</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif; /* Default font */
+            margin: 0;
+            padding: 0;
+        }
+
+        .toolbar {
+            background-color: #f0f0f0;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .editor {
+            border: 1px solid #ccc;
+            min-height: 300px;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: white;
+            overflow: auto;
+            font-family: inherit; /* Ensure the editor uses the selected font */
+        }
+        .toolbar button, .toolbar select, .toolbar input {
+            margin-right: 5px;
+            margin-bottom: 5px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .toolbar button img {
+            width: 20px;
+            height: 20px;
+        }
+        /*웹 문서 편집 폰트 지원*/
+        @font-face {
+            font-family: "dohyeon";
+            font-weight: normal;
+            font-style: normal;
+            src: url("https://cdn.jsdelivr.net/gh/wefonts/dohyeon/dohyeon.eot");
+            src: url("https://cdn.jsdelivr.net/gh/wefonts/dohyeon/dohyeon.eot?#iefix") format("embedded-opentype"),
+                url("https://cdn.jsdelivr.net/gh/wefonts/dohyeon/dohyeon.woff2") format("woff2"),
+                url("https://cdn.jsdelivr.net/gh/wefonts/dohyeon/dohyeon.woff") format("woff"),
+                url("https://cdn.jsdelivr.net/gh/wefonts/dohyeon/dohyeon.ttf") format("truetype");
+            font-display: swap;
+        } 
+        @font-face {
+            font-family: 'LeeSeoyun';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2202-2@1.0/LeeSeoyun.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'S-CoreDream-3Light';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-3Light.woff') format('woff');
+            font-weight: 500; /* Set font weight to 500 */
+            font-style: bold;
+        }
+        @font-face {
+            font-family: 'yg-jalnan';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_four@1.2/JalnanOTF00.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Freesentation-6SemiBold';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2404@1.0/Freesentation-6SemiBold.woff2') format('woff2');
+            font-weight: 600;
+        }
+        @font-face {
+            font-family: "Malgun-Gothic";
+            src: url("https://db.onlinewebfonts.com/t/3a025ae92e6446cec24efcb6d29e5bf3.eot");
+            src: url("https://db.onlinewebfonts.com/t/3a025ae92e6446cec24efcb6d29e5bf3.eot?#iefix")format("embedded-opentype"),
+            url("https://db.onlinewebfonts.com/t/3a025ae92e6446cec24efcb6d29e5bf3.woff2")format("woff2"),
+            url("https://db.onlinewebfonts.com/t/3a025ae92e6446cec24efcb6d29e5bf3.woff")format("woff"),
+            url("https://db.onlinewebfonts.com/t/3a025ae92e6446cec24efcb6d29e5bf3.ttf")format("truetype"),
+            url("https://db.onlinewebfonts.com/t/3a025ae92e6446cec24efcb6d29e5bf3.svg#Malgun Gothic")format("svg");
+        }
+        /* Popup 스타일 */
+        #popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 20px;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 500;
+        }
+        .special-char-menu {
+            display: none;
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 10px;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .special-char-menu button {
+            margin: 5px 0;
+            display: block;
+            width: 100%;
+            text-align: left;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+    <div class="toolbar">
+        <input type="text" id="filenameInput" placeholder="Document Name" />
+        <button onclick="execCmd('bold')"><img src="https://img.icons8.com/material-outlined/24/000000/bold.png" alt="Bold"></button>
+        <button onclick="execCmd('italic')"><img src="https://img.icons8.com/material-outlined/24/000000/italic.png" alt="Italic"></button>
+        <button onclick="execCmd('underline')"><img src="https://img.icons8.com/material-outlined/24/000000/underline.png" alt="Underline"></button>
+        <button onclick="execCmd('insertUnorderedList')"><img src="https://img.icons8.com/material-outlined/24/000000/bulleted-list.png" alt="Bullet List"></button>
+        <button onclick="execCmd('insertOrderedList')"><img src="https://img.icons8.com/material-outlined/24/000000/numbered-list.png" alt="Numbered List"></button>
+        <button onclick="execCmd('justifyLeft')"><img src="https://img.icons8.com/material-outlined/24/000000/align-left.png" alt="Align Left"></button>
+        <button onclick="execCmd('justifyCenter')"><img src="https://img.icons8.com/material-outlined/24/000000/align-center.png" alt="Align Center"></button>
+        <button onclick="execCmd('justifyRight')"><img src="https://img.icons8.com/material-outlined/24/000000/align-right.png" alt="Align Right"></button>
+        <button onclick="execCmd('insertImage', prompt('Enter the image URL', 'http://'))"><img src="https://img.icons8.com/material-outlined/24/000000/picture.png" alt="Insert Image"></button>
+        <button onclick="execCmd('createLink', prompt('Enter the URL', 'http://'))"><img src="https://img.icons8.com/material-outlined/24/000000/link.png" alt="Insert Link"></button>
+        <button onclick="execCmd('unlink')"><img src="https://icon-library.com/images/unlink-icon/unlink-icon-2.jpg" alt="Unlink"></button>
+        <button onclick="toggleSpecialCharMenu()">★</button>
+        <div id="specialCharMenu" class="special-char-menu">
+            <button onclick="insertSpecialChar('♥')">♥</button>
+            <button onclick="insertSpecialChar('♦')">♦</button>
+            <button onclick="insertSpecialChar('♣')">♣</button>
+            <button onclick="insertSpecialChar('♠')">♠</button>
+            <button onclick="insertSpecialChar('★')">★</button>
+            <button onclick="insertSpecialChar('✿')">✿</button>
+            <button onclick="insertSpecialChar('•')">•</button>
+            <button onclick="insertSpecialChar('✓')">✓</button>
+            <button onclick="insertSpecialChar('❖')">❖</button>
+            <button onclick="insertSpecialChar('✦')">✦</button>
+        </div>
+        <button onclick="insertVideo()">📹</button>
+        <select onchange="execCmd('fontName', this.value)">
+            <option value="Arial">Arial</option>
+            <option value="Courier New">Courier New</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Verdana">Verdana</option>
+            <option value="Tahoma">Tahoma</option>
+            <option value="Trebuchet MS">Trebuchet MS</option>
+            <option value="Lucida Sans">Lucida Sans</option>
+            <option value="Impact">Impact</option>
+            <option value="Comic Sans MS">Comic Sans MS</option>
+            <option value="S-CoreDream-3Light">S-CoreDream</option>
+            <option value="LeeSeoyun">이서윤체</option>
+            <option value="yg-jalnan">여기어때 잘난체</option>
+            <option value="dohyeon">Dohyeon</option>
+            <option value="Freesentation-6SemiBold">프리젠테이션</option>
+            <option value="Malgun-Gothic">맑은 고딕</option>
+        </select>
+        
+        <select onchange="execCmd('fontSize', this.value)">
+            <option value="1">Small</option>
+            <option value="2">SM</option>
+            <option value="3">Normal</option>
+            <option value="4">ML</option>
+            <option value="5">Large</option>
+            <option value="10">Extra Large</option>
+        </select>
+        <input type="color" onchange="execCmd('foreColor', this.value)">
+        <input type="color" onchange="execCmd('hiliteColor', this.value)" title="Background Color">
+        <button onclick="printContent()">🖶 Print</button>
+        <button id="downloadPDF">Download PDF</button>
+        
+    </div>
+
+    <div id="editor" class="editor" contenteditable="true">
+        Start editing...
+    </div>
+
+    <div id="popup">
+        <span id="popupMessage"></span>
+        <button onclick="closePopup()">Close</button>
+    </div>
+    <div id="overlay" onclick="closePopup()"></div>
+
+    <script>
+        let uid = null;
+        let params = null; // params 변수를 전역으로 정의
+        let contentInterval = null;
+
+        let previousContent = '';  // 전역으로 정의하여 초기화
+
+        window.onload = function() {
+            params = new URLSearchParams(window.location.search);
+            uid = params.get('uid');
+            console.log('Loaded UID:', uid);
+
+            if (uid) {
+                fetchContent();  // 서버에서 기존 콘텐츠 불러오기
+            }
+
+            // 0.5초마다 콘텐츠가 변경되었는지 확인하고, 변경된 경우 서버에 저장
+            setInterval(() => {
+                const currentContent = document.getElementById('editor').innerHTML;
+                const title = document.getElementById('filenameInput').value;
+                
+
+
+                if (currentContent !== previousContent) {
+                    updateContent(currentContent, title);
+                    previousContent = currentContent;  // 변경된 내용을 저장
+                    console.log("Sucess on saving Content")
+                }
+            }, 500);
+        }
+
+
+        function fetchContent() {
+            fetch(`http://localhost/docs/${uid}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Document not found.');
+                    }
+                    return response.json();  // JSON 형식으로 파싱
+                })
+                .then(data => {
+                    const { content, title } = data;  // 서버에서 받아온 JSON 객체에서 내용과 제목 추출
+                    document.getElementById('editor').innerHTML = content;  // HTML 콘텐츠 설정
+                    document.getElementById('filenameInput').value = title;  // 제목 설정
+                })
+                .catch(error => {
+                    console.error(error);
+                    showPopup('Error fetching content: ' + error.message);
+                });
+        }
+
+
+        function updateContent(content, title) {
+            if (!uid) return;  // UID가 없으면 업데이트하지 않음
+
+            fetch(`http://localhost/docs/${uid}`, {
+                method: 'PUT',  // Change from POST to PUT
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ content, title }),  // JSON 형식으로 전송
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error updating content.');
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                showPopup('Error updating content: ' + error.message);
+            });
+        }
+
+
+        function execCmd(command, value) {
+            document.execCommand(command, false, value);
+        }
+
+        function toggleSpecialCharMenu() {
+            const menu = document.getElementById('specialCharMenu');
+            menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function insertSpecialChar(char) {
+            document.execCommand('insertText', false, char);
+            toggleSpecialCharMenu();  // Insert the special character and close the menu
+        }
+
+        function printContent() {
+            const content = document.getElementById('editor').innerHTML;
+            const win = window.open('', '', 'height=600,width=800');
+            win.document.write('<html><head><title>Print Document</title></head><body>');
+            win.document.write(content);
+            win.document.write('</body></html>');
+            win.document.close();
+            win.print();
+        }
+
+        // PDF 다운로드 기능
+        document.getElementById('downloadPDF').addEventListener('click', () => {
+            const element = document.getElementById('editor');
+            html2pdf()
+                .from(element)
+                .save(`${document.getElementById('filenameInput').value || 'document'}.pdf`);
+        });
+
+        function showPopup(message) {
+            const popup = document.getElementById('popup');
+            const overlay = document.getElementById('overlay');
+            document.getElementById('popupMessage').innerText = message;
+            popup.style.display = 'block';
+            overlay.style.display = 'block';
+        }
+
+        function closePopup() {
+            const popup = document.getElementById('popup');
+            const overlay = document.getElementById('overlay');
+            popup.style.display = 'none';
+            overlay.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

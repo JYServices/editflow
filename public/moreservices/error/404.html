@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 Error Page</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            height: 100vh;
+            background: linear-gradient(-45deg, #71b7e6, #69a6ce, #b98acc, #ee8176, #b98acc, #69a6ce, #9b59b6);
+            background-size: 400%;
+            animation: gradient 10s ease infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0 0; }
+            50% { background-position: 100% 100%; }
+            100% { background-position: 0 0; }
+        }
+        
+        #error-page {
+            max-width: 600px;
+            text-align: center;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        
+        .header {
+            font-size: 15vw;
+            font-weight: bold;
+            background: linear-gradient(-45deg, #71b7e6, #69a6ce, #b98acc, #ee8176, #b98acc, #69a6ce, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient 10s ease infinite;
+        }
+        
+        h4 {
+            font-size: 1.5em;
+            margin: 20px 0;
+            color: #333;
+        }
+        
+        p {
+            font-size: 1.2em;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        
+        .btns {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .btns a {
+            text-decoration: none;
+            color: #69a6ce;
+            font-weight: 500;
+            padding: 10px 25px;
+            border: 2px solid #69a6ce;
+            border-radius: 25px;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+        
+        .btns a:hover {
+            background: #69a6ce;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div id="error-page">
+        <h2 class="header">404</h2>
+        <h4>Oops! Page not found</h4>
+        <p>Sorry, the page you're looking for doesn't exist. If you think something is broken, report a problem.</p>
+        <div class="btns">
+            <a href="http://127.0.0.1/">Return Home</a>
+            <a href="http://127.0.0.1/">Report Problem</a>
+        </div>
+    </div>
+</body>
+</html>

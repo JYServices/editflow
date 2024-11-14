@@ -1,0 +1,25 @@
+{
+  "title": "SW테스트제목",
+  "content": {
+    "title": "SW테스트제목",
+    "subtitle": "퀴즈 부제목 입력란",
+    "questions": [
+      {
+        "text": "객관식 문제가 여기에 표시됩니다.",
+        "type": "multiple",
+        "options": [
+          "객관식 문제 선택지 1",
+          "객관식 문제 선택지 2",
+          "객관식 문제 선택지 3",
+          "객관식 문제 선택지 4"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "text": "주관식 문제는 여기에 표기됩니다.",
+        "type": "subjective",
+        "correctAnswer": "주관식 문제 정답"
+      }
+    ]
+  }
+}

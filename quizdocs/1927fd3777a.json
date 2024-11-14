@@ -1,0 +1,22 @@
+{
+  "title": "퀴즈의 제목",
+  "subtitle": "퀴즈의 부제목",
+  "questions": [
+    {
+      "text": "객관식 문제 예시",
+      "type": "multiple",
+      "options": [
+        "a",
+        "a",
+        "a",
+        "a"
+      ],
+      "correctAnswer": "1"
+    },
+    {
+      "text": "주관식 문제",
+      "type": "subjective",
+      "correctAnswer": "a"
+    }
+  ]
+}

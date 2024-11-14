@@ -1,0 +1,282 @@
+<html><head><title>ìê¸°ìê°ì_ìì¸ìë¶í´ ìë¦¬ ì¤ëª</title></head><body><html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="pdf:PDFVersion" content="1.7"/>
+<meta name="xmp:CreatorTool" content="Microsoft&reg; Word LTSC"/>
+<meta name="pdf:hasXFA" content="false"/>
+<meta name="access_permission:modify_annotations" content="true"/>
+<meta name="access_permission:can_print_degraded" content="true"/>
+<meta name="dc:creator" content="준우 유"/>
+<meta name="dcterms:created" content="2024-10-31T06:39:58Z"/>
+<meta name="dcterms:modified" content="2024-10-31T06:39:58Z"/>
+<meta name="dc:format" content="application/pdf; version=1.7"/>
+<meta name="xmpMM:DocumentID" content="uuid:EB27C0DE-CAF0-4C5D-982A-26616DDEBA03"/>
+<meta name="pdf:docinfo:creator_tool" content="Microsoft&reg; Word LTSC"/>
+<meta name="access_permission:fill_in_form" content="true"/>
+<meta name="pdf:docinfo:modified" content="2024-10-31T06:39:58Z"/>
+<meta name="pdf:hasCollection" content="false"/>
+<meta name="pdf:encrypted" content="false"/>
+<meta name="xmp:CreateDate" content="2024-10-31T15:39:58Z"/>
+<meta name="Content-Length" content="290631"/>
+<meta name="pdf:hasMarkedContent" content="true"/>
+<meta name="Content-Type" content="application/pdf"/>
+<meta name="xmp:ModifyDate" content="2024-10-31T15:39:58Z"/>
+<meta name="pdf:docinfo:creator" content="준우 유"/>
+<meta name="dc:language" content="en"/>
+<meta name="pdf:producer" content="Microsoft&reg; Word LTSC"/>
+<meta name="access_permission:extract_for_accessibility" content="true"/>
+<meta name="access_permission:assemble_document" content="true"/>
+<meta name="xmpTPg:NPages" content="5"/>
+<meta name="resourceName" content="42a61cec5a6dd884747b3648a84498ee"/>
+<meta name="pdf:hasXMP" content="true"/>
+<meta name="access_permission:extract_content" content="true"/>
+<meta name="access_permission:can_print" content="true"/>
+<meta name="X-TIKA:Parsed-By" content="org.apache.tika.parser.DefaultParser"/>
+<meta name="X-TIKA:Parsed-By" content="org.apache.tika.parser.pdf.PDFParser"/>
+<meta name="access_permission:can_modify" content="true"/>
+<meta name="pdf:docinfo:producer" content="Microsoft&reg; Word LTSC"/>
+<meta name="pdf:docinfo:created" content="2024-10-31T06:39:58Z"/>
+<title></title>
+</head>
+<body><div class="page"><p/>
+<p>prime(x) 함수 전체 코드와 단계별 설명 
+</p>
+<p>javascript 
+</p>
+<p>Copy code 
+</p>
+<p>function prime(x) { 
+</p>
+<p>    var i; 
+</p>
+<p>    var count = 0; 
+</p>
+<p>    if (x == 2) 
+</p>
+<p>        return true; 
+</p>
+<p> 
+</p>
+<p>    for (i = 1; i &lt;= Math.sqrt(x); i += 2) { 
+</p>
+<p>        if (x % i == 0) 
+</p>
+<p>            count += 1; 
+</p>
+<p>        if (count &gt;= 2) 
+</p>
+<p>            return false; 
+</p>
+<p>    } 
+</p>
+<p>    return true; 
+</p>
+<p>} 
+</p>
+<p>이 함수는 x 가 소수인지 아닌지 true 또는 false 로 반환해 줍니다. 
+</p>
+<p>1. 숫자 2 는 특별 처리 (if (x == 2)) 
+</p>
+<p>&bull; 설명: 2 는 소수 중에서 유일한 짝수입니다. 따라서, 이 함수는 2 가 입력되면 더 이상 
+</p>
+<p>확인하지 않고 바로 true 를 반환하여 2 가 소수임을 알려줍니다. 
+</p>
+<p>&bull; 목적: 2 를 처리하여 이후의 계산을 단순화하고 성능을 조금 더 빠르게 합니다. 
+</p>
+<p>2. 홀수만 확인 (for 루프에서 i += 2) 
+</p>
+<p>&bull; 설명: for 루프는 i 를 1 부터 시작해 Math.sqrt(x) (즉, x 의 제곱근)까지만 확인합니다. 모든 
+</p>
+<p>짝수는 소수가 될 수 없으므로 짝수는 건너뛰고 i 를 2 씩 증가시켜 홀수만 검사합니다. 
+</p>
+<p>&bull; 목적: 모든 짝수를 건너뛰어 루프를 빠르게 돌도록 하여 효율성을 높입니다. </p>
+<p/>
+</div>
+<div class="page"><p/>
+<p>3. 나누어 떨어지는지 확인 (if (x % i == 0)) 
+</p>
+<p>&bull; 설명: x % i == 0 은 x 가 i 로 나누어 떨어지는지 확인하는 조건입니다. 이 조건이 true 면 i 는 
+</p>
+<p>x 의 약수입니다. 
+</p>
+<p>&bull; 목적: 약수의 개수를 확인하여 소수인지 여부를 판별합니다. 
+</p>
+<p>4. 소수가 아닌 경우 (count &gt;= 2) 
+</p>
+<p>&bull; 설명: count 는 x 의 약수의 개수를 셉니다. 만약 count 가 2 이상이 되면 x 는 더 이상 소수가 
+</p>
+<p>아니므로 false 를 반환합니다. 소수는 1 과 자기 자신만 약수로 가지므로, count 가 1 이하일 
+</p>
+<p>때만 소수일 수 있습니다. 
+</p>
+<p>&bull; 목적: 약수의 개수를 통해 효율적으로 소수 여부를 빠르게 결정합니다. 
+</p>
+<p>5. 끝까지 조건에 걸리지 않으면 소수로 판별 (return true) 
+</p>
+<p>&bull; 설명: 루프가 끝날 때까지 count 가 2 이상이 되지 않았다면, x 는 소수입니다. 따라서, return 
+</p>
+<p>true 로 소수임을 나타냅니다. 
+</p>
+<p>&bull; 목적: 모든 검사를 마치고도 false 를 반환하지 않은 경우 소수라는 결론을 내립니다. 
+</p>
+<p>factor() 함수는 입력된 숫자를 소인수분해하여 결과를 계산하고, HTML 로 출력하는 기능을 합니다. 
+</p>
+<p>이 함수는 가장 작은 소수부터 시작하여 숫자를 계속 나누면서 소인수를 구하는 방식으로 
+</p>
+<p>작동합니다. 이제 코드의 주요 부분을 단계별로 설명하겠습니다. 
+</p>
+<p>전체 코드와 단계별 설명 
+</p>
+<p>javascript 
+</p>
+<p>Copy code 
+</p>
+<p>function factor() { 
+</p>
+<p>    var x = document.getElementById("num").value,  // 사용자가 입력한 값 
+</p>
+<p>        i = 2,  // 가장 작은 소수로 시작 
+</p>
+<p>        exp = 0;  // 소수의 지수 초기화 
+</p>
+<p>    var str = x + " = ";  // 결과 문자열 초기화 
+</p>
+<p> </p>
+<p/>
+</div>
+<div class="page"><p/>
+<p>    if (x &lt; 2) {  // 2 미만의 숫자는 소인수분해 불가 
+</p>
+<p>        document.getElementById("result").innerHTML = "소인수분해에 실패하였습니다. " + x; 
+</p>
+<p>        return; 
+</p>
+<p>    } 
+</p>
+<p> 
+</p>
+<p>    do { 
+</p>
+<p>        if (prime(i) == true) {  // i 가 소수인지 확인 
+</p>
+<p>            if (x % i == 0) {  // i 가 x 의 인수인지 확인 
+</p>
+<p>                while (x % i == 0) {  // 인수로 나눌 수 있을 때까지 나누기 
+</p>
+<p>                    x /= i; 
+</p>
+<p>                    exp += 1;  // 지수 증가 
+</p>
+<p>                } 
+</p>
+<p>                str += (i + "&lt;sup&gt;" + (exp != 1 ? exp : '') + "&lt;/sup&gt;" + " &times; ");  // 결과 문자열에 추가 
+</p>
+<p>                exp = 0;  // 지수 초기화 
+</p>
+<p>            } 
+</p>
+<p>        } 
+</p>
+<p>        i += (i == 2) ? 1 : 2;  // 2 이후로는 홀수만 체크 
+</p>
+<p>    } while (x != 1);  // x 가 1 이 될 때까지 반복 
+</p>
+<p> 
+</p>
+<p>    str = str.slice(0, -2);  // 마지막의 "&times; " 제거 
+</p>
+<p>    document.getElementById("result").innerHTML = str;  // 결과 출력 
+</p>
+<p>} 
+</p>
+<p>이 함수는 factor() 함수로 호출되며, 소인수분해의 과정을 거쳐 #result 요소에 최종 결과를 
+</p>
+<p>출력합니다. 이 과정을 단계별로 살펴보겠습니다. </p>
+<p/>
+</div>
+<div class="page"><p/>
+<p>1. 변수 초기화 
+</p>
+<p>&bull; x = document.getElementById("num").value: x 는 사용자가 입력한 숫자입니다. 
+</p>
+<p>&bull; i = 2: 소인수분해를 시작할 가장 작은 소수(2)로 초기화합니다. 
+</p>
+<p>&bull; exp = 0: 현재 인수의 지수(몇 번 나누었는지) 초기값을 설정합니다. 
+</p>
+<p>&bull; str = x + " = ": 결과를 표현할 문자열을 준비합니다. 나중에 소인수들이 추가되며, 
+</p>
+<p>최종적으로 결과를 출력합니다. 
+</p>
+<p>2. 입력 값 확인 (if (x &lt; 2)) 
+</p>
+<p>&bull; 설명: 소인수분해는 2 이상의 자연수에서만 의미가 있습니다. 따라서 2 미만의 숫자가 
+</p>
+<p>입력되면 소인수분해를 시도하지 않고 "소인수분해에 실패하였습니다."라는 메시지를 
+</p>
+<p>출력합니다. 
+</p>
+<p>3. 소수 및 인수분해 반복 (do...while 루프) 
+</p>
+<p>이 루프는 입력 숫자를 소인수로 나눌 수 없을 때까지 반복합니다. 
+</p>
+<p>&bull; prime(i) == true: 현재 숫자 i 가 소수인지 확인합니다. 소수가 아닌 수는 소인수가 될 수 
+</p>
+<p>없으므로 소수가 아니면 건너뜁니다. 
+</p>
+<p>&bull; if (x % i == 0): x 가 현재 소수 i 로 나누어 떨어질 때만 인수로 사용할 수 있습니다. 
+</p>
+<p>4. 소인수분해 및 지수 계산 (while (x % i == 0)) 
+</p>
+<p>이 while 루프는 x 를 i 로 나눌 수 있을 때까지 나눕니다. i 로 나누어 떨어지지 않게 될 때까지 
+</p>
+<p>나누면서 exp 값을 증가시킵니다. 
+</p>
+<p>&bull; 설명: x 를 계속 나누면, 특정 소수의 인수로 몇 번 나누어지는지를 나타내는 지수(exp)가 
+</p>
+<p>계산됩니다. 예를 들어, x 가 18 이라면 2^1 &times; 3^2 의 형태가 됩니다. 
+</p>
+<p>&bull; str += (i + "&lt;sup&gt;" + (exp != 1 ? exp : '') + "&lt;/sup&gt;" + " &times; ");: 나누어 떨어지지 않으면 현재 
+</p>
+<p>소수 i 와 지수 exp 를 결과 문자열에 추가합니다. exp 가 1 이면 sup 태그로 표시하지 
+</p>
+<p>않습니다. 
+</p>
+<p>5. 다음 소수로 이동 (i += (i == 2) ? 1 : 2) </p>
+<p/>
+</div>
+<div class="page"><p/>
+<p>&bull; 설명: i 가 2 일 때만 1 을 더하여 다음 값인 3 으로 넘어가고, 그 이후로는 홀수만 더하여 
+</p>
+<p>소수를 확인합니다. (모든 짝수는 2 로 나누어 떨어지므로 홀수만 확인) 
+</p>
+<p>(삼항 연산자를 풀어서 작성) if (i == 2) { 
+</p>
+<p>    i += 1;  // i 가 2 인 경우에는 1 을 더해서 i 를 3 으로 만듭니다. 
+</p>
+<p>} else { 
+</p>
+<p>    i += 2;  // i 가 2 가 아닌 경우에는 2 를 더해서 다음 홀수로 만듭니다. 
+</p>
+<p>} 
+</p>
+<p> 
+</p>
+<p>6. 결과 문자열 마무리 (str = str.slice(0, -2)) 
+</p>
+<p>&bull; 설명: 마지막에 남은 "&times; "를 제거하여 결과가 보기 좋게 완성됩니다. 
+</p>
+<p>7. 결과 출력 (document.getElementById("result").innerHTML = str;) 
+</p>
+<p>&bull; 설명: 최종적으로 소인수분해된 결과 문자열을 HTML 요소 #result 에 출력하여 사용자가 
+</p>
+<p>결과를 볼 수 있게 합니다. 
+</p>
+<p>요약 
+</p>
+<p>이 함수는 입력된 숫자를 가장 작은 소수부터 나누어 나가며 소인수분해를 수행하고, 그 결과를 
+</p>
+<p>지수 형태로 표현하여 출력합니다. 
+</p>
+<p> </p>
+<p/>
+</div>
+</body></html></body></html>
