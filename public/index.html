@@ -12,7 +12,6 @@
             font-style: normal;
         }
         body {
-            /* font-family: Arial, sans-serif; (구버전 Arial Sans-serif 폰트 패밀리*/
             font-family: 'Freesentation-6SemiBold', sans-serif;
             margin: 0;
             padding: 0;
@@ -21,13 +20,12 @@
 
         .container {
             width: 80%;
-            right: 0;
             margin: auto;
             margin-top: 50px;
             background-color: #fff;
             padding: 20px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            margin-left: 300px; /* drawer의 너비만큼 왼쪽 마진 추가 */
+            margin-left: 300px; 
         }
 
         .drawer {
@@ -79,11 +77,6 @@
             padding: 10px;
             font-size: 16px;
         }
-        #formForm input{
-            width: 80%;
-            padding: 10px;
-            font-size: 16px;
-        }
 
         #docForm button:hover, #formTypeSelector button:hover {
             background-color: #45a049;
@@ -108,7 +101,7 @@
         <a href="#" onclick="showSection('documents')">문서</a>
         <a href="#" onclick="showSection('forms')">퀴즈 편집</a>
         <a href="#" onclick="showSection('slides')">Interactive 슬라이드</a>
-        <a href="#" onclick="window.location.href='/whiteboard/'">화이트보드</a>
+        <a href="#" onclick="window.location.href='/whiteboard/'">화이트보드</a> 
         <a href="#" onclick="window.location.href='/moreservices/video/'">사용방법</a>
     </div>
 
@@ -126,7 +119,6 @@
                 <button type="submit">문서 생성</button>
             </form>
             
-            <!-- PDF Upload Section -->
             <h2>PDF 업로드로 문서 추가</h2>
             <form id="pdfUploadForm" onsubmit="uploadPdf(event)">
                 <input type="file" id="pdfFile" accept=".pdf" required>
@@ -137,6 +129,7 @@
             <ul id="docList"></ul>
         </div>
         
+    
         <div id="formSection">
             <form id="formForm" onsubmit="createNewForm(event)">
                 <input type="text" id="formTitle" placeholder="추가할 퀴즈의 이름을 입력하세요." required>
@@ -151,7 +144,7 @@
             <h2>내 퀴즈 목록</h2>
             <ul id="formList"></ul>
         </div>
-        
+
         <div id="slideSection" style="display: none;">
             <h2>Interactive 슬라이드</h2>
             <button onclick="createNewSlide()">슬라이드 생성 (Coming Soon)</button>
@@ -160,7 +153,8 @@
     </div>
 
     <script>
-        // Ensure sections are shown correctly
+        const apiBaseUrl = 'https://editflow.onrender.com';  // API base URL
+
         function showSection(section) {
             section = section.toLowerCase();  
             document.getElementById('documentSection').style.display = section === 'documents' ? 'block' : 'none';
@@ -176,13 +170,23 @@
             document.getElementById('sectionTitle').innerText = titles[section] || 'Interactive Slides Manager';
         }
 
+        document.getElementById('formType').addEventListener('change', function() {
+            const quizPromptInput = document.getElementById('quizPrompt');
+            quizPromptInput.style.display = this.value === 'ai' ? 'block' : 'none';
+        });
+
         window.onload = function() {
             loadDocuments();
             loadForms();
-            showSection('documents');
+            showSection('documents')
         };
 
-        // Document creation logic
+        document.getElementById('docType').addEventListener('change', function() {
+            const aiPromptInput = document.getElementById('aiPrompt');
+            aiPromptInput.style.display = this.value === 'ai' ? 'block' : 'none';
+        });
+
+        // Document management logic
         function createNewDoc(event) {
             event.preventDefault();
 
@@ -191,7 +195,7 @@
             const uid = generateUID();
 
             const newDoc = { title, uid, content: '<p>New Document</p>' };
-            let url = 'https://editflow.onrender.com/docs';
+            let url = `${apiBaseUrl}/docs`;  // Use the API base URL
             let bodyData = JSON.stringify(newDoc);
 
             if (docType === 'ai') {
@@ -200,7 +204,7 @@
                     alert('Please enter a prompt for the AI-generated document.');
                     return;
                 }
-                url = 'https://editflow.onrender.com/generate-ai-doc';
+                url = `${apiBaseUrl}/generate-ai-doc`;
                 bodyData = JSON.stringify({ prompt });
             }
 
@@ -214,16 +218,19 @@
                 return response.json();
             })
             .then(data => {
-                newDoc.content = data.content || '<p>New Document</p>';
-                return fetch('https://editflow.onrender.com/docs', {
+                const content = data.content || '<p>New Document</p>';
+                newDoc.content = content;
+
+                return fetch(`${apiBaseUrl}/docs`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(newDoc),
                 });
             })
-            .then(() => {
-                addDocumentToCache(newDoc);
-                document.getElementById('docForm').reset();
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to save document');
+                addDocumentToCache(newDoc); 
+                document.getElementById('docForm').reset(); 
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -231,28 +238,34 @@
             });
         }
 
-        // PDF Upload logic
+        function createNewSlide() {
+            window.location.href = "/slides/v2.html";
+        }
+
+        function generateUID() {
+            return '_' + Math.random().toString(36).substr(2, 9);
+        }
+
         function uploadPdf(event) {
             event.preventDefault();
+            const file = document.getElementById('pdfFile').files[0];
 
-            const pdfFile = document.getElementById('pdfFile').files[0];
+            if (!file) return alert('PDF file is required');
+
             const formData = new FormData();
-            formData.append('pdf', pdfFile);
+            formData.append('pdf', file);
 
-            fetch('https://editflow.onrender.com/uploadpdf', {
+            fetch(`${apiBaseUrl}/upload-pdf`, {
                 method: 'POST',
-                body: formData,
+                body: formData
             })
             .then(response => {
                 if (!response.ok) throw new Error('Failed to upload PDF');
                 return response.json();
             })
             .then(data => {
-                const { uid, title } = data;
-                const newPdfDoc = { title: title || pdfFile.name, uid };
-                addDocumentToCache(newPdfDoc);
-                alert('PDF uploaded successfully!');
-                document.getElementById('pdfUploadForm').reset();
+                alert('PDF uploaded successfully');
+                loadDocuments();
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -260,14 +273,36 @@
             });
         }
 
-        // Create form logic
+        // Helper function to add document to the UI
+        function addDocumentToCache(doc) {
+            const docList = document.getElementById('docList');
+            const li = document.createElement('li');
+            li.textContent = doc.title;
+            li.onclick = () => openDocument(doc.uid);
+            docList.appendChild(li);
+        }
+
+        function loadDocuments() {
+            fetch(`${apiBaseUrl}/docs`)
+            .then(response => response.json())
+            .then(docs => {
+                const docList = document.getElementById('docList');
+                docList.innerHTML = ''; // clear the list
+                docs.forEach(doc => addDocumentToCache(doc));
+            })
+            .catch(error => console.error('Error loading documents:', error));
+        }
+
+        // Form management logic
         function createNewForm(event) {
             event.preventDefault();
+            
             const title = document.getElementById('formTitle').value;
             const formType = document.getElementById('formType').value;
             const uid = generateUID();
 
-            const newQuizDoc = { title, uid };
+            const newForm = { title, uid, type: formType };
+            let url = `${apiBaseUrl}/forms`;  // Use the API base URL
 
             if (formType === 'ai') {
                 const prompt = document.getElementById('quizPrompt').value;
@@ -275,52 +310,51 @@
                     alert('Please enter a prompt for the AI-generated quiz.');
                     return;
                 }
-
-                fetch('https://editflow.onrender.com/generate-ai-quiz', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userPrompt: prompt, uid: uid })
-                })
-                .then(response => {
-                    if (!response.ok) throw new Error('Failed to generate AI quiz');
-                    return response.json();
-                })
-                .then(data => {
-                    newQuizDoc.content = data.content;
-                    return fetch('https://editflow.onrender.com/save-quiz', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(newQuizDoc),
-                    });
-                })
-                .then(() => {
-                    addFormToCache(newQuizDoc);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error: ' + error.message);
-                });
-            } else {
-                fetch(`https://editflow.onrender.com/save-quiz?title=${title}&uid=${uid}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(newQuizDoc),
-                })
-                .then(() => {
-                    addFormToCache(newQuizDoc);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error: ' + error.message);
-                });
+                url = `${apiBaseUrl}/generate-ai-form`;
+                newForm.prompt = prompt;
             }
+
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newForm),
+            })
+            .then(response => response.json())
+            .then(data => {
+                addFormToCache(data);
+                document.getElementById('formForm').reset();
+            })
+            .catch(error => {
+                console.error('Error creating form:', error);
+                alert('Error creating form: ' + error.message);
+            });
         }
 
-        function generateUID() {
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
-            });
+        function loadForms() {
+            fetch(`${apiBaseUrl}/forms`)
+            .then(response => response.json())
+            .then(forms => {
+                const formList = document.getElementById('formList');
+                formList.innerHTML = '';
+                forms.forEach(form => addFormToCache(form));
+            })
+            .catch(error => console.error('Error loading forms:', error));
+        }
+
+        function addFormToCache(form) {
+            const formList = document.getElementById('formList');
+            const li = document.createElement('li');
+            li.textContent = form.title;
+            li.onclick = () => openForm(form.uid);
+            formList.appendChild(li);
+        }
+
+        function openDocument(uid) {
+            alert(`Document UID: ${uid}`); // Implement document viewing logic here
+        }
+
+        function openForm(uid) {
+            alert(`Form UID: ${uid}`); // Implement form viewing logic here
         }
     </script>
 </body>
