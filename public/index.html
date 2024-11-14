@@ -5,7 +5,100 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EditFlow - AI문서 편집</title>
     <style>
-        /* Your CSS remains unchanged */
+        @font-face {
+            font-family: 'Freesentation-6SemiBold';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2404@1.0/Freesentation-6SemiBold.woff2') format('woff2');
+            font-weight: 600;
+            font-style: normal;
+        }
+        body {
+            /* font-family: Arial, sans-serif; (구버전 Arial Sans-serif 폰트 패밀리*/
+            font-family: 'Freesentation-6SemiBold', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            width: 80%;
+            right: 0;
+            margin: auto;
+            margin-top: 50px;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            margin-left: 300px; /* drawer의 너비만큼 왼쪽 마진 추가 */
+        }
+
+        .drawer {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 250px;
+            background-color: #333;
+            color: white;
+            padding: 15px;
+        }
+
+        .drawer a {
+            color: white;
+            display: block;
+            padding: 10px 0;
+            text-decoration: none;
+        }
+
+        .drawer a:hover {
+            background-color: #444;
+        }
+
+        h1 {
+            text-align: center;
+        }
+        #documentSection, #formSection, #slideSection {
+            display: none;
+        }
+
+        #formTypeSelector {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        #formTypeSelector button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #docForm input {
+            width: 80%;
+            padding: 10px;
+            font-size: 16px;
+        }
+        #formForm input{
+            width: 80%;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        #docForm button:hover, #formTypeSelector button:hover {
+            background-color: #45a049;
+        }
+
+        #docList li, #formList li {
+            background-color: #f9f9f9;
+            margin: 10px 0;
+            padding: 15px;
+            border: 1px solid #ccc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
     </style>
 </head>
 <body>
