@@ -231,7 +231,7 @@
 
 
         function fetchContent() {
-            fetch(`http://localhost/docs/${uid}`)
+            fetch(`https://editflow.onrender.com/docs/${uid}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Document not found.');
@@ -253,7 +253,7 @@
         function updateContent(content, title) {
             if (!uid) return;  // UID가 없으면 업데이트하지 않음
 
-            fetch(`http://localhost/docs/${uid}`, {
+            fetch(`https://editflow.onrender.com/docs/${uid}`, {
                 method: 'PUT',  // Change from POST to PUT
                 headers: {
                     'Content-Type': 'application/json',
