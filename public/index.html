@@ -101,24 +101,29 @@
         /* 모바일 친화적인 디자인을 위한 미디어 쿼리 추가 */
         @media (max-width: 768px) {
             .drawer {
+                display: flex; /* 메뉴를 수평으로 정렬 */
+                flex-direction: row; /* 한 줄로 표시 */
+                overflow-x: auto; /* 수평 스크롤 활성화 */
+                white-space: nowrap; /* 메뉴 항목이 줄바꿈되지 않도록 설정 */
                 width: 100%;
                 height: auto;
                 position: relative;
                 padding: 10px 0;
-                text-align: center;
+                background-color: #333; /* 배경 유지 */
             }
         
             .drawer a {
-                padding: 8px 0;
-                margin: 5px 0;
+                flex-shrink: 0; /* 메뉴가 줄어들지 않도록 설정 */
+                padding: 8px 10px;
+                margin: 0 5px;
                 font-size: 14px;
+                text-align: center;
+                white-space: nowrap; /* 텍스트 줄바꿈 방지 */
             }
         
             .container {
                 width: 95%;
-                margin-left: auto;
-                margin-right: auto;
-                margin-top: 20px;
+                margin: 20px auto;
                 padding: 10px;
                 box-shadow: none; /* 모바일에서는 그림자 제거 */
             }
