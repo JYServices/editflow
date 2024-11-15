@@ -205,7 +205,7 @@
             const uid = generateUID(); // 수정된 UID 생성 방식
 
             const newDoc = { title, uid, content: '<p>New Document</p>' };
-            let url = 'docs';
+            let url = 'https://editflow.onrender.com/docs';
             let bodyData = JSON.stringify(newDoc);
 
             if (docType === 'ai') {
@@ -214,7 +214,7 @@
                     alert('Please enter a prompt for the AI-generated document.');
                     return;
                 }
-                url = 'generate-ai-doc';
+                url = 'https://editflow.onrender.com/generate-ai-doc';
                 bodyData = JSON.stringify({ prompt });
             }
 
@@ -233,7 +233,7 @@
                 newDoc.content = content;
 
                 // 서버에 문서 저장
-                return fetch('docs', {
+                return fetch('https://editflow.onrender.com/docs', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(newDoc),
@@ -295,7 +295,7 @@
             const formData = new FormData();
             formData.append('pdf', pdfFile);
 
-            fetch('uploadpdf', {
+            fetch('https://editflow.onrender.com/uploadpdf', {
                 method: 'POST',
                 body: formData,
             })
@@ -334,7 +334,7 @@
                     return;
                 }
                 
-                fetch('generate-ai-quiz', {
+                fetch('https://editflow.onrender.com/generate-ai-quiz', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userPrompt: prompt, uid: uid }) // userPrompt와 uid 모두 포함
@@ -347,7 +347,7 @@
                     const quizContent = data.content; // AI 응답의 quizContent
                     newQuizDoc.content = quizContent; // content 추가
                     console.log("지금 AI의 생성값이 서버 문서에 저장되고 있습니다.")
-                    return fetch('save-quiz', {
+                    return fetch('https://editflow.onrender.com/save-quiz', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(newQuizDoc),
@@ -398,7 +398,7 @@
         }
 
         function deleteItem(uid, cacheKey) {
-            fetch(`deletedocuments?uid=${uid}`, { method: 'POST' }).then(() => {
+            fetch(`https://editflow.onrender.com/deletedocuments?uid=${uid}`, { method: 'POST' }).then(() => {
                 removeItemFromCache(uid, cacheKey);
             });
         }
@@ -445,7 +445,7 @@
             const uid = prompt("Enter your whiteboard UID:");
             if (!uid) return;
 
-            fetch(`/userboards/${uid}`)
+            fetch(`https://editflow.onrender.com/userboards/${uid}`)
                 .then(response => {
                     if (!response.ok) throw new Error('Failed to load whiteboard');
                     return response.blob();
@@ -472,7 +472,7 @@
 
             const image = canvas.toDataURL('image/jpeg'); // 캔버스 이미지를 base64로 변환
 
-            fetch('/userboards', {
+            fetch('https://editflow.onrender.com/userboards', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ uid, image }),
