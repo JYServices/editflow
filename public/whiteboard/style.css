@@ -123,6 +123,9 @@ section{
   border-radius: 4px;
   cursor: pointer;
 }
+canvas {
+    touch-action: none; /* 터치 동작 중 기본 동작 방지 (예: 스크롤) */
+}
 .buttons .clear-canvas{
   color: #6C757D;
   border: 1px solid #6C757D;
