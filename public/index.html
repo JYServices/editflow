@@ -98,7 +98,66 @@
             justify-content: space-between;
             align-items: center;
         }
-
+        /* 모바일 친화적인 디자인을 위한 미디어 쿼리 추가 */
+        @media (max-width: 768px) {
+            .drawer {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 10px 0;
+                text-align: center;
+            }
+        
+            .drawer a {
+                padding: 8px 0;
+                margin: 5px 0;
+                font-size: 14px;
+            }
+        
+            .container {
+                width: 95%;
+                margin-left: auto;
+                margin-right: auto;
+                margin-top: 20px;
+                padding: 10px;
+                box-shadow: none; /* 모바일에서는 그림자 제거 */
+            }
+        
+            h1 {
+                font-size: 18px;
+            }
+        
+            #formTypeSelector button {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+        
+            #docForm input, #formForm input {
+                width: 100%;
+                padding: 8px;
+                font-size: 14px;
+            }
+        
+            #docList li, #formList li {
+                flex-direction: column; /* 모바일에서는 세로 정렬 */
+                align-items: flex-start;
+                padding: 10px;
+            }
+        
+            #docList li button, #formList li button {
+                margin-top: 10px;
+            }
+        
+            #docForm button, #formTypeSelector button {
+                width: 100%;
+                font-size: 14px;
+            }
+        
+            h2 {
+                font-size: 16px;
+                margin-top: 20px;
+            }
+        }
     </style>
 </head>
 <body>
