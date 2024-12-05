@@ -173,7 +173,6 @@
         <h2>EditFlow 메뉴</h2>
         <a href="#" onclick="showSection('documents')">문서</a>
         <a href="#" onclick="showSection('forms')">퀴즈 편집</a>
-        <a href="#" onclick="showSection('slides')">Interactive 슬라이드</a>
         <a href="#" onclick="window.location.href='/whiteboard/'">화이트보드</a> <!-- Whiteboard 추가 -->
         <a href="#" onclick="window.location.href='/moreservices/video/'">사용방법</a>
     </div>
@@ -236,7 +235,6 @@
             const titles = {
                 documents: '문서 생성/열기',
                 forms: '퀴즈 생성/열기',
-                slides: 'Interactive 슬라이드 매니저',
                 whiteboard: '화이트보드'
             };
             document.getElementById('sectionTitle').innerText = titles[section] || 'Interactive Slides Manager';
